@@ -12,7 +12,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docker_form.settings")
 django.setup()
 from visual.models import Image
 
-def docker_image():
+def docker_image():                 #获取镜像信息
     client = docker.from_env()
     image_id=[]                     # 获取镜像id
     image_repository=[]             # 获取镜像标签
@@ -37,16 +37,16 @@ def docker_image():
         i+=1
     return imagelist
 
-def docker_search(repository,image):                            # 确定是否有这个镜像
+def docker_search(repository,image):                            # 搜索镜像
     client = docker.from_env()
-    if "." in repository:
+    if "\." in repository:
         search_image=re.split("\.",image)[0]+"-"+image
         if client.search(repository+":"+search_image):
             return 1
         else:
             return ""
 
-def docker_pull(repository,image,tag):
+def docker_pull(repository,image,tag):                          #从源拉取镜像
     if docker_search(repository=repository,image=image):
         if tag == "" :
             tag = "latest"
@@ -63,8 +63,7 @@ def docker_pull(repository,image,tag):
         message="镜像不存在"
         return message
 
-
-def docker_rmi(idlist):
+def docker_rmi(idlist):                                             # 删除镜像
     client = docker.from_env()
     list = docker_image()
     for id in idlist:
@@ -74,12 +73,12 @@ def docker_rmi(idlist):
                 client.remove_image(name)
     return "success"
 
-def docker_commit(id,reponame,tag):             # 在函数里暂时找不到命名的方法
+def docker_commit(id,reponame,tag):                                 # 根据容器生成镜像
     client = docker.from_env()
     client.commit(resource_id=id,repository=reponame,tag=tag)
     return "success"
 
-def docker_build(reponame):
+def docker_build(reponame):                                         # 根据dockerfile生成镜像
     client = docker.from_env()
     client.build(path="file/", tag=reponame, rm=True)
     return "success"

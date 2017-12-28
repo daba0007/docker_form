@@ -48,11 +48,12 @@ def image_add(request):                     # 增加镜像
 @csrf_exempt
 def docker_pull_image(request):             # 从镜像源拉取镜像
     image = request.POST.get('image', '')
-    if "/" in image:
-        message="镜像填写错误"
-    elif image:
+    if image:
         tag = request.POST.get('tag', '')
         reponame = request.POST.get('reponame', '')
+        if "/" in image:                    # 如果用户将容器源也填入镜像中
+            reponame=re.split("/",image)[0]
+            image=re.split("/",image)[1]
         message=docker_pull(reponame,image,tag)
     else:
         message="请填写镜像"
@@ -69,11 +70,11 @@ def image_del(request):                      # 删除镜像
     flag=0
     for repository in repositorylist:
         for con in  list:
-            if repository == con.image:            # 首先判断是否存在在使用镜像的容器，存在则提示先删除容器
+            if repository == con.image:      # 首先判断是否存在在使用镜像的容器，存在则提示先删除容器
                 flag=1
     if flag == 1:
         message = "存在正在使用的容器，请先删除该容器"
-    else:                                           # 若选择的所有镜像都没有使用容器的，则进行删除
+    else:                                    # 若选择的所有镜像都没有使用容器的，则进行删除
         docker_rmi(idlist)
         message = repositorylist[0]+"等镜像已删除"
     rst = {'message': message}
@@ -137,7 +138,8 @@ def container_table(request):               # 容器信息页面
     return HttpResponse(json.dumps(rst))
 
 def container_add(request):                 # 增加容器页面
-    return render(request, 'container_add.html')
+    containerlist=docker_ps()
+    return render(request, 'container_add.html',{'containerlist':containerlist})
 
 @csrf_exempt
 def docker_create_container(request):       # 通过镜像创建容器
@@ -152,6 +154,9 @@ def docker_create_container(request):       # 通过镜像创建容器
         reponame = request.POST.get('reponame', '')
         if reponame == "":                  # 默认镜像源daocloud.io
             reponame = "daocloud.io"
+        if "/" in image:                    # 如果用户将容器源也填入镜像中
+            reponame=re.split("/",image)[0]
+            image=re.split("/",image)[1]
         command = request.POST.get('command', '')
         name = request.POST.get('name', '')
         check_d = request.POST.get('check_d', '')
@@ -165,32 +170,31 @@ def docker_create_container(request):       # 通过镜像创建容器
         check_link= request.POST.get('check_link', '')                                                  # 验证是否设置连接
         alias_name=request.POST.getlist('alias_name[]', '')                                            # 要连接的容器名
         host_name = request.POST.getlist('host_name[]', '')                                            # 在容器中的名称
+        check_volume_from = request.POST.get('check_volume_from', '')                                   # 验证是否要建立数据卷容器
+        volume_from_select = request.POST.get('volume_from_select', '')                                 # 数据卷容器
 
         message = docker_create(image=image, reponame=reponame, tag=tag, command=command, name=name, detach=check_d,
                                 volume_container_list=volume_container_list, volume_local_list=volume_local_list,
                                 volume_permission=volume_permission, port_local_list=port_local_list,
                                 port_container_list=port_container_list, alias_name=alias_name, host_name=host_name,
-                                check_link=check_link, check_port=check_port, check_volume=check_volume)
+                                check_link=check_link, check_port=check_port, check_volume=check_volume,
+                                check_volume_from=check_volume_from,volume_from_select=volume_from_select)
     else:
         message="请填写镜像"
     rst = {'message': message}
     return HttpResponse(json.dumps(rst))
 
 @csrf_exempt
-def container_rm(request):                      # 移除容器页面
+def container_rm(request):
     idlist=request.POST.getlist('idlist', '')
     statuslist = request.POST.getlist('statuslist', '')
     flag = 0
     for status in statuslist:
-        if docker_status(status) == 'exited' :  # 首先判断是否存在在使用的容器，存在则提示先停止容器
-            flag = 0
-        elif docker_status(status) == 'created' :
-            flag = 0
-        else:
+        if (docker_status(status) != 'exited' or docker_status(status) != 'created') :                      # 若容器不是出于退出或刚创建，不能删除
             flag = 1
     if flag == 1:
         message = "存在正在使用的容器，请先删除该容器"
-    else:                                       # 若容器都可删除，则进行删除
+    else:
         docker_rm(idlist)
         message=idlist[0]+"等容器删除成功"
     rst = {
@@ -199,7 +203,7 @@ def container_rm(request):                      # 移除容器页面
     return HttpResponse(json.dumps(rst))
 
 @csrf_exempt
-def container_start(request):                   # 容器开始
+def container_start(request):
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
     message=docker_start(id=id,status=status)
@@ -209,7 +213,7 @@ def container_start(request):                   # 容器开始
     return HttpResponse(json.dumps(rst))
 
 @csrf_exempt
-def container_stop(request):                   # 容器停止
+def container_stop(request):
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
     message=docker_stop(id=id,status=status)
@@ -217,7 +221,7 @@ def container_stop(request):                   # 容器停止
     return HttpResponse(json.dumps(rst))
 
 @csrf_exempt
-def container_pause(request):                   # 容器暂停
+def container_pause(request):
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
     message=docker_pause(id=id,status=status)
@@ -227,7 +231,7 @@ def container_pause(request):                   # 容器暂停
     return HttpResponse(json.dumps(rst))
 
 @csrf_exempt
-def container_unpause(request):                   # 容器继续
+def container_unpause(request):
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
     message=docker_unpause(id=id,status=status)

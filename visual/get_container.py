@@ -13,72 +13,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docker_form.settings")
 django.setup()
 from visual.models import Container
 
-def docker_ps():
-    client = docker.from_env()
-
-    container_id=[]                     # 获取容器id
-    container_name=[]                   # 获取容器标签
-    container_status=[]                 # 获取容器状态
-    container_created=[]                # 获取容器创建时间
-    container_port=[]                   # 获取端口信息
-    container_image=[]                  # 获取容器镜像信息
-    container_command=[]                # 获取容器中命令
-
-    containerlist=[]                    # 容器列表
-
-    for container  in client.containers(all=True):
-        if container.get("Id"):                                 # 得到的信息不一定存在，所以需要判断
-            id=container.get("Id")[0:12]
-        else:
-            id=""
-        container_id.append(id)
-
-        if client.inspect_container(resource_id=id).get("Created"):  # 得到的信息不一定存在，所以需要判断
-            created = re.split(r'[T\.]', client.inspect_container(resource_id=id).get("Created"))[0] + " " + \
-                      re.split(r'[T\.]', client.inspect_container(resource_id=id).get("Created"))[1]  # 提取创建时间并加工为时间格式
-        else:
-            created=""
-        container_created.append(created)
-
-        if container.get("Status"):                             # 得到的信息不一定存在，所以需要判断
-            status= container.get("Status")                     # 得到容器运行状态
-        else:
-            status=""
-        container_status.append(status)
-
-        if container.get("Names"):                              # 得到的信息不一定存在，所以需要判断
-            name=re.split('/', container.get("Names")[0])[1]        #得到容器名称
-        else:
-            name=""
-        container_name.append(name)
-
-        if container.get("Ports"):                              # 得到的信息不一定存在，所以需要判断
-            info=container.get("Ports")[0]                      # 得到端口信息
-            port="%s:%s -> %s/%s" %(info.get("IP"),info.get("PrivatePort"),info.get("PublicPort"),info.get("Type"))
-        else:
-            port=""
-        container_port.append(port)
-
-        if container.get("Image"):
-            image=container.get("Image")
-        else:
-            image=""
-        container_image.append(image)
-
-        if container.get("Command"):
-            command=container.get("Command")
-        else:
-            command=""
-        container_command.append(command)
-
-    i=0
-    for container in client.containers(all=True):
-        containerlist.append(Container(id=container_id[i], con_port=container_port[i], name=container_name[i],
-                                       created=container_created[i], status=container_status[i],
-                                       image=container_image[i], command=container_command[i]))
-        i+=1
-    return containerlist
-
+##############判断合法与否#######################33
 def judge_volume(check_volume,volume_local_list,volume_container_list):                 # 判断容器卷是否合法,容器卷不存在时永远为真
     judge=1                                                                             # 合法
     if check_volume:                                                                    #如果容器卷存在，不能同时为空
@@ -120,10 +55,75 @@ def judge_exist(reponame,image):
                 exist=1
     return exist
 
-def docker_create(image, reponame, tag, command, detach, name, volume_local_list, volume_container_list,volume_permission,port_local_list, port_container_list,
-                  check_link, check_volume, check_port, alias_name, host_name):
+################容器命令函数##############33
+def docker_ps():                                               # 显示容器信息
+    client = docker.from_env()
+    container_id=[]                                             # 获取容器id
+    container_name=[]                                           # 获取容器标签
+    container_status=[]                                         # 获取容器状态
+    container_created=[]                                        # 获取容器创建时间
+    container_port=[]                                           # 获取端口信息
+    container_image=[]                                          # 获取容器镜像信息
+    container_command=[]                                        # 获取容器中命令
+    containerlist=[]                                            # 容器列表
+    for container  in client.containers(all=True):             # 得到的信息不一定存在，需要进行判断
 
-    if not judge_exist(reponame=reponame,image=image):                                                                                # 镜像不存在
+        if container.get("Id"):                                 # 获得短id
+            id=container.get("Id")[0:12]
+        else:
+            id=""
+        container_id.append(id)
+
+        if client.inspect_container(resource_id=id).get("Created"):  # 得到创建时间
+            created = re.split(r'[T\.]', client.inspect_container(resource_id=id).get("Created"))[0] + " " + \
+                      re.split(r'[T\.]', client.inspect_container(resource_id=id).get("Created"))[1]  # 提取创建时间并加工为时间格式
+        else:
+            created=""
+        container_created.append(created)
+
+        if container.get("Status"):                             # 得到运行状态
+            status= container.get("Status")                     # 得到容器运行状态
+        else:
+            status=""
+        container_status.append(status)
+
+        if container.get("Names"):                              # 得到名称
+            name=re.split('/', container.get("Names")[0])[1]     #得到容器名称
+        else:
+            name=""
+        container_name.append(name)
+
+        if container.get("Ports"):                              # 得到端口
+            info=container.get("Ports")[0]                      # 得到端口信息
+            port="%s:%s -> %s/%s" %(info.get("IP"),info.get("PrivatePort"),info.get("PublicPort"),info.get("Type"))
+        else:
+            port=""
+        container_port.append(port)
+
+        if container.get("Image"):                              # 得到镜像
+            image=container.get("Image")
+        else:
+            image=""
+        container_image.append(image)
+
+        if container.get("Command"):                            # 得到命令
+            command=container.get("Command")
+        else:
+            command=""
+        container_command.append(command)
+
+    i=0
+    for container in client.containers(all=True):
+        containerlist.append(Container(id=container_id[i], con_port=container_port[i], name=container_name[i],
+                                       created=container_created[i], status=container_status[i],
+                                       image=container_image[i], command=container_command[i]))
+        i+=1
+    return containerlist
+
+def docker_create(image, reponame, tag, command, detach, name, volume_local_list, volume_container_list,volume_permission,port_local_list, port_container_list,
+                  check_link, check_volume, check_port, alias_name, host_name,check_volume_from,volume_from_select):                #创建容器
+
+    if not judge_exist(reponame=reponame,image=image):                                                                              # 镜像不存在
         message="镜像不存在"
     elif not judge_name(name):                                                                                                      # 定义的容器名不合法
         message="容器名不合法"
@@ -150,61 +150,30 @@ def docker_create(image, reponame, tag, command, detach, name, volume_local_list
         for num in range(len(port_local_list)):  # 格式container_id = cli.create_container('busybox', 'ls', ports=[1111, 2222],host_config=cli.create_host_config(port_bindings={1111: 4567,2222: None}))
             port_bindings[port_container_list[num - 1]] = port_local_list[num - 1]                                                  # host_config=  client.create_host_config(port_bindings=port_bindings)
 
-        networklist={}
+        volume_from_select_list=[]
+        volume_from_select_list.append(volume_from_select_list)                                                                     # 创建数据卷容器数组
+        if not check_volume:
+            binds=[]
+        if not check_port:
+            port_bindings={}
+        if not check_volume_from:
+            volume_from_select=""
+        if not check_link:                                                                                                          # 转换格式，binds是[],port_bindings是{}，volumes_from 和links是""
+            links=""
 
-        if not check_link:                                                                                                  # 如果不存在网络连接
-            if (check_volume and not check_port):                                                                           # 如果只存在数据卷
-                host_config = client.create_host_config(binds=binds)                                                         # 生成主机配置
-                info = client.create_container(image=imagename, command=command, detach=flag, name=name,
-                                               volumes=volume_container_list, host_config=host_config)                       # 创建容器
-            elif (not check_volume and check_port):                                                                         # 如果只存在端口
-                host_config = client.create_host_config(port_bindings=port_bindings)                                         # 生成主机配置
-                info = client.create_container(image=imagename, command=command, detach=flag, name=name,
-                                                   ports=port_container_list, host_config=host_config)                       # 创建容器
-            elif (check_volume and check_port):                                                                             # 如果都存在
-                host_config = client.create_host_config(binds=binds, port_bindings=port_bindings)
-                info = client.create_container(image=imagename, command=command, detach=flag, name=name,
-                                              volumes=volume_container_list, ports=port_container_list,
-                                              host_config=host_config)                                                      # 创建容器
-            else:                                                                                                           # 如果都不存在
-                info = client.create_container(image=imagename, command=command, detach=flag,name=name)
-            id = "%s" % (info.get("Id")[0:12])
-            if detach == "1":
-                client.start(resource_id=id)
-            message = "容器" + id + "创建成功"
-        else:                                                                                                               #如果存在网络连接
-            message="尚未开发"
-            '''
-            for num in range(len(alias_name)):  # 格式networking_config = docker_client.create_networking_config({'network1': docker_client.create_endpoint_config(ipv4_address='172.28.0.124',aliases=['foo', 'bar'],links=['container2'])})
-                network = "network" + str(num)
-                aliases = []
-                aliases.append(alias_name[num - 1])
-                links = []
-                links.append(host_name[num - 1])
-                networklist[network] = client.create_endpoint_config(aliases=aliases,links=links)                            # networking_config = docker_client.create_networking_config(networklist)
-            networking_config = client.create_networking_config(networklist)
-            if (check_volume and not check_port):                                                                           # 如果只存在数据卷
-                host_config = client.create_host_config(binds=binds)                                                         # 生成主机配置
-                info = client.create_container(image=imagename, command=command, detach=flag, name=name,
-                                               volumes=volume_container_list, host_config=host_config,
-                                               networking_config=networking_config)                                          # 创建容器
-            elif (not check_volume and check_port):                                                                         # 如果只存在端口
-                host_config = client.create_host_config(port_bindings=port_bindings)                                         # 生成主机配置
-                info = client.create_container(image=imagename, command=command, detach=flag, name=name,
-                                                   ports=port_container_list, host_config=host_config,
-                                                networking_config=networking_config)                                        # 创建容器
-            elif (check_volume and check_port):                                                                             # 如果都存在
-                host_config = client.create_host_config(binds=binds, port_bindings=port_bindings)
-                info = client.create_container(image=imagename, command=command, detach=flag, name=name,
-                                              volumes=volume_container_list, ports=port_container_list,
-                                              host_config=host_config,networking_config=networking_config)                   # 创建容器
-            else:                                                                                                           # 如果都不存在
-                info = client.create_container(image=imagename, command=command, detach=flag,
-                                               name=name,networking_config=networking_config)
-            '''
+        host_config = client.create_host_config(binds=binds, port_bindings=port_bindings, links=links,
+                                                volumes_from=volume_from_select)                                                     # 设置容器配置
+        info = client.create_container(image=imagename, command=command, detach=flag, name=name,
+                                      volumes=volume_container_list, ports=port_container_list,
+                                      host_config=host_config)                                                                       # 创建容器
+
+        id = "%s" % (info.get("Id")[0:12])
+        if detach == "1":
+            client.start(resource_id=id)
+        message = "容器" + id + "创建成功"
     return message
 
-def docker_status(status):              # 容器状态判断函数，up表示运行中，created表示刚创建未运行，exited表示已退出,paused表示暂停
+def docker_status(status):                                                                                                           # 容器状态判断函数，up表示运行中，created表示刚创建未运行，exited表示已退出,paused表示暂停
     flag=0
     if "Up" in status:
         flag="up"
@@ -216,15 +185,15 @@ def docker_status(status):              # 容器状态判断函数，up表示运
         flag="exited"
     return flag
 
-def docker_rm(idlist):                  # 需要判断容器是否是运行的
+def docker_rm(idlist):
     client = docker.from_env()
     for id in idlist:
         client.remove_container(resource_id=id)
     return "success"
 
 def docker_start(id,status):
-    flag=docker_status(status)          # 判断容器状态
-    if (flag == "exited" or flag== "created"):
+    flag=docker_status(status)
+    if (flag == "exited" or flag== "created"):                                                                                      # 若容器处于退出或刚创建，可以开始
         client = docker.from_env()
         client.start(resource_id=id)
         message=id+"启动成功"
@@ -233,20 +202,20 @@ def docker_start(id,status):
     return message
 
 def docker_stop(id,status):
-    flag = docker_status(status)  # 判断容器状态
+    flag = docker_status(status)
     client = docker.from_env()
-    if flag == "up":
+    if flag == "up":                                                                                                                    # 若容器处于运行，可以关闭
         client.stop(resource_id=id)
         message=id+"退出成功"
-    elif flag == "exited":
+    elif flag == "exited":                                                                                                              # 若容器处于退出，提示不用关闭
         message = "容器已经处于退出状态"
     else:
         message="请确保容器处于运行（UP）状态"
     return message
 
 def docker_pause(id,status):
-    flag = docker_status(status)  # 判断容器状态
-    if flag == "up" :
+    flag = docker_status(status)
+    if flag == "up" :                                                                                                                       #容器处于运行才可关闭
         client = docker.from_env()
         client.pause(resource_id=id)
         message=id+"暂停成功"
@@ -255,8 +224,8 @@ def docker_pause(id,status):
     return message
 
 def docker_unpause(id,status):
-    flag = docker_status(status)  # 判断容器状态
-    if flag == "paused" :
+    flag = docker_status(status)
+    if flag == "paused" :                                                                                                                   # 容器处于暂停才可继续
         client = docker.from_env()
         client.unpause(resource_id=id)
         message=id+"继续运行"
