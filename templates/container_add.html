@@ -1,0 +1,136 @@
+{% extends 'index.html' %}
+{% block title %}容器添加{% endblock %}
+{% block content %}
+<div class="row" style="width: auto">
+    <div class="col-lg-12" style="background-color: #ffffff">
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active"><a href="#create" data-toggle="tab">创建一个容器</a></li>
+            <li><a href="#command" data-toggle="tab">创建一个容器并进入终端</a></li>
+        </ul>
+    <div id="myTabContent" class="tab-content" style="background-color: #ffffff ;margin-top: 50px;margin-bottom: 50px;">
+        <div class="tab-pane fade in active" id="create">
+            <form class="form-horizontal" role="form" id="container_pull_form">
+                <div class="form-group">
+                    <label for="containername" class="col-sm-2 control-label">指定镜像</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="containername" name="container"
+                               placeholder="请输入镜像名(必填) " required="required">
+                    </div>
+                    <label for="check_d" class="col-sm-1 control-label">是否为守护态</label>
+                    <div class="col-sm-4">
+                        <input type="checkbox"  id="check_d" name="check_d" value=1>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="containerreponame" class="col-sm-2 control-label">镜像源</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="containerreponame" name="reponame"
+                               placeholder="daocloud.io(选填，默认为daocloud.io)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="containertag" class="col-sm-2 control-label">版本号</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="containertag" name="tag"
+                               placeholder="latest(选填，默认为latest)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="con_command" class="col-sm-2 control-label">运行命令</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="con_command" name="command"
+                               placeholder="/bin/echo 'Hello world'(选填)">
+                    </div>
+                </div>
+                <div class="form-group" id="form_container_name">
+                    <label for="con_name" class="col-sm-2 control-label">容器名字</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="con_name" name="con_name"
+                               placeholder="alice_ubuntu'(选填)">
+                    </div>
+                </div>
+                <div class="form-group" id="volume_form">
+                    <label class="col-sm-2 control-label">数据卷</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox"  id="check_volume" name="check_volume" value=1 />
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="volume_local_name" name="volume_local_name"
+                               placeholder="本地:/www/static(选填)" style="display: none">
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="volume_con_name" name="volume_container_name"
+                               placeholder="容器:/web/static(选填)" style="display: none">
+                    </div>
+                    <div class="col-sm-2">
+                        <select class="form-control" id="volume_permission" name="volume_permission" style="display: none">
+                            <option>rw</option>
+                            <option>ro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="port_form">
+                    <label class="col-sm-2 control-label">端口映射</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox"  id="check_port" name="check_port" value=1 />
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="port_local_name" name="port_local_name" style="display: none"
+                               placeholder="本地端口:80(选填)">
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="port_con_name" name="port_container_name" style="display: none"
+                               placeholder="容器端口:8000(选填)">
+                    </div>
+                </div>
+                <div class="form-group" id="link_form">
+                    <label for="check_link" class="col-sm-2 control-label">连接其他容器</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox"  id="check_link" name="check_link" value=1 />
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="alias_name" name="alias_name" style="display: none"
+                               placeholder="连接的容器名称(必填)">
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="host_name" name="host_name" style="display: none"
+                               placeholder="在容器中的名称(必填)">
+                    </div>
+                </div>
+                <div class="form-group" id="buttom_form"></div>
+            </form>
+            <div class="col-sm-12" style="margin-bottom: 50px">
+                <div class="col-sm-offset-2 col-sm-2" style="margin-bottom: 50px">
+                    <button type="submit" class="btn btn-default" id="container_pull">创建容器</button>
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-default" id="volume_add" style="display: none">增加数据卷</button>
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-default" id="port_add" style="display: none">增加端口映射</button>
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-default" id="link_add" style="display: none">增加网络连接</button>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="command">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label for="container_bash_name" class="col-sm-2 control-label">指定镜像</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="container_bash_name" name="container_bash"
+                               placeholder="请输入镜像名(必填) " required="required" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-2">
+                        <button type="submit" class="btn btn-default">创建容器</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

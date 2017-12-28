@@ -1,0 +1,110 @@
+{% extends 'index.html' %}
+{% block title %}镜像添加{% endblock %}
+{% block content %}
+<div class="row" style="width: auto">
+    <div class="col-lg-12" style="background-color: #ffffff">
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active"><a href="#pull" data-toggle="tab">基于镜像源拉取</a></li>
+            <li><a href="#dockerfile" data-toggle="tab">基于dockerfile创建</a></li>
+            <li><a href="#commit" data-toggle="tab">基于已有镜像的容器创建</a></li>
+        </ul>
+    <div id="myTabContent" class="tab-content" style="background-color: #ffffff ;margin-top: 50px;margin-bottom: 50px">
+        <div class="tab-pane fade in active" id="pull">
+            <form class="form-horizontal" role="form" id="image_pull_form">
+                <div class="col-md-offset-1 col-md-11 column">
+                    <blockquote>
+                        <p style="font-size: 20px;font-weight: bold">
+                            镜像pull须等待一段时间，国内拉取daocloud.io源的镜像能够快一点
+                        </p>
+                    </blockquote>
+                </div>
+                <div class="form-group">
+                    <label for="imagename" class="col-sm-2 control-label">镜像名</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="imagename" name="image"
+                               placeholder="请输入镜像名(必填)" required="required"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="versionname" class="col-sm-2 control-label">版本号</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="versionname" name="tag"
+                               placeholder="latest(选填，默认为latest)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reponame" class="col-sm-2 control-label">镜像源</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="reponame" name="reponame"
+                               placeholder="daocloud.io(选填，默认为daocloud.io)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10" style="margin-bottom: 50px">
+                        <button type="submit" class="btn btn-default" id="image_pull">创建</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane fade" id="dockerfile">
+            <form class="form-horizontal" role="form" id="image_dockerfile_from">
+                <div class="form-group">
+                    <label for="dockerfilename" class="col-sm-2 control-label">dockerfile</label>
+                    <div class="col-sm-10">
+                        <textarea type="text" class="form-control" id="dockerfilename"
+                                  placeholder="请编写你的dockerfile" rows="20" required="required" ></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dockerfile_name" class="col-sm-2 control-label">命名你的镜像</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="dockerfile_name" name="reponame"
+                               placeholder="alice/ubuntu(必填)" required="required"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default" id="push_btn_dockerfile">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane fade" id="commit">
+            <form class="form-horizontal" role="form" id="image_commit_form">
+                <div class="form-group">
+                    <label for="exist_con_name" class="col-sm-2  control-label">基于容器创建镜像</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="exist_con_name" name="container">
+                            {% for container in containerlist %}
+                            <option>{{ container.name }}</option>
+                            {% empty %}
+                            None
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="namemyrepo" class="col-sm-2 control-label">自定义镜像名</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="namemyrepo" name="reponame"
+                               placeholder="alice/ubuntu(选填，若不填不会显示标签和版本号">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="mytag" class="col-sm-2 control-label">版本号</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="mytag" name="tag"
+                               placeholder="latest(选填，默认为latest)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default" id="image_btn_commit">创建</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
