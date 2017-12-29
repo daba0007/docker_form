@@ -1,7 +1,7 @@
 /////////////////容器按钮操作////////////////////////////
 ////////////////创建容器按钮//////////////
 $('#container_pull').click(function() {
-    var image,command,tag,reponame,con_name,check_d,check_volume,check_port,check_link
+    var image,command,tag,reponame,con_name,check_d,check_volume,check_port,check_link,check_volume_from,volume_from_select //这个数据卷容器暂时用数，添加方式不确定。
     var volume_permission=[]
     var alias_name=[]
     var host_name=[]
@@ -66,13 +66,19 @@ $('#container_pull').click(function() {
         if(this.name=="check_link"){                 // 是否网络连接
             check_link=this.value;
         }
-        if(this.name=="alias_name"){                 // 是否网络连接
+        if(this.name=="alias_name"){                 // 别名
             alias_name[alias_num]=this.value;
             alias_num++;
         }
-        if(this.name=="host_name"){                 // 是否网络连接
+        if(this.name=="host_name"){                 // 容器中名
             host_name[host_num]=this.value;
             host_num++;
+        }
+        if(this.name=="check_volume_from") {          //是否连接数据卷
+            check_volume_from=this.value;
+        }
+        if(this.name=="volume_from_select"){           //数据卷容器
+            volume_from_select=this.value;
         }
     });
     $.ajax({
@@ -95,7 +101,9 @@ $('#container_pull').click(function() {
             'port_container_list':port_container_list,
             'check_link':check_link,
             'alias_name':alias_name,
-            'host_name':host_name
+            'host_name':host_name,
+            'check_volume_from':check_volume_from,
+            'volume_from_select':volume_from_select
         },
         async: false,
         success:function(data){
@@ -274,7 +282,7 @@ $("#check_link").click(function(){
 });
 ///////////////判断增加多少网络连接//////////
 $('#link_add').click(function() {
-    $("#buttom_form").before(" <div class='form-group'>" +
+    $("#volume_from_form").before(" <div class='form-group'>" +
         "                           <label class='col-sm-2 control-label'>连接其他容器</label>" +
         "                               <div class='col-sm-5'>" +
         "                                   <input type='text' class='form-control' name='alias_name' placeholder='连接的容器名称(必填)'>" +
@@ -283,6 +291,12 @@ $('#link_add').click(function() {
         "                                   <input type='text' class='form-control' name='host_name' placeholder='在容器中的名称(必填)'>" +
         "                               </div>" +
         "                           </div>" );
+});
+///////////////判断数据卷容器//////////////
+$("#check_volume_from").click(function(){
+    $("#volume_from_select").show()
+    $("#check_volume_from").hide()
+    $("#volume_from_add").show()
 });
 
 

@@ -46,12 +46,12 @@ def judge_name(name):                                                           
             judge=""
     return judge
 
-def judge_exist(reponame,image):
-    exist = docker_search(repository=reponame, image=image)
+def judge_exist(reponame,image,tag):
+    exist = docker_search(repository=reponame, image=image,tag=tag)
     if not exist:
         list = docker_image()
         for ima in list:
-            if ima.repository == reponame+"/"+image:                                                                                              # 如果有镜像的名字
+            if ima.repository == reponame+"/"+image:           # 如果有镜像的名字
                 exist=1
     return exist
 
@@ -120,12 +120,13 @@ def docker_ps():                                               # 显示容器信
         i+=1
     return containerlist
 
-def docker_create(image, reponame, tag, command, detach, name, volume_local_list, volume_container_list,volume_permission,port_local_list, port_container_list,
-                  check_link, check_volume, check_port, alias_name, host_name,check_volume_from,volume_from_select):                #创建容器
+def docker_create(image, reponame, tag, command, detach, name, volume_local_list, volume_container_list,
+                      volume_permission, port_local_list, port_container_list, check_link, check_volume, check_port,
+                      alias_name, host_name, check_volume_from, volume_from_select):  # 创建容器
 
-    if not judge_exist(reponame=reponame,image=image):                                                                              # 镜像不存在
+    if not judge_exist(reponame=reponame,image=image,tag=tag):              # 镜像不存在
         message="镜像不存在"
-    elif not judge_name(name):                                                                                                      # 定义的容器名不合法
+    elif not judge_name(name):                                              # 定义的容器名不合法
         message="容器名不合法"
     elif not judge_volume(check_volume=check_volume,volume_local_list=volume_local_list,volume_container_list=volume_container_list):# 容器卷不合法
         message="容器卷不合法"
@@ -133,32 +134,32 @@ def docker_create(image, reponame, tag, command, detach, name, volume_local_list
         message="端口映射不合法"
     elif not judge_link(check_link=check_link,alias_name=alias_name,host_name=host_name):                                           # 网络连接不合法
         message = "网络连接不合法"
-    else:                                                                                                                           # 都合法
-        client = docker.from_env()                                                                                                  # 定义docker
-        docker_pull(repository=reponame, image=image, tag=tag)                                                                      # 拉取镜像
-        imagename = "%s/%s:%s" % (reponame, image, tag)                                                                             # 定义镜像名，守护态-d=false
-        if detach == "1":                                                                                                           # 设置detach
+    else:                                                                    # 都合法
+        client = docker.from_env()                                           # 定义docker
+        docker_pull(repository=reponame, image=image, tag=tag)                # 拉取镜像
+        imagename = "%s/%s:%s" % (reponame, image, tag)                      # 定义镜像名，守护态-d=false
+        if detach == "1":                                                     # 设置detach
             flag = False
         else:
             flag = True
 
-        binds = []                                                                                                                   # 数据卷数组
+        binds = []                                                              # 数据卷数组
         for num in range(len(volume_local_list)):  # 格式container_id = cli.create_container('busybox', 'ls', volumes=['/mnt/vol1', '/mnt/vol2'],host_config=cli.create_host_config(binds=['/home/user1/:/mnt/vol2','/var/www:/mnt/vol1:ro',]))
             binds.append("%s:%s:%s" % (volume_local_list[num - 1], volume_container_list[num - 1],volume_permission[num-1]))       # host_config =client.create_host_config(binds=binds)
 
-        port_bindings = {}                                                                                                           # 端口字典
+        port_bindings = {}                                                     # 端口字典
         for num in range(len(port_local_list)):  # 格式container_id = cli.create_container('busybox', 'ls', ports=[1111, 2222],host_config=cli.create_host_config(port_bindings={1111: 4567,2222: None}))
             port_bindings[port_container_list[num - 1]] = port_local_list[num - 1]                                                  # host_config=  client.create_host_config(port_bindings=port_bindings)
 
         volume_from_select_list=[]
-        volume_from_select_list.append(volume_from_select_list)                                                                     # 创建数据卷容器数组
+        volume_from_select_list.append(volume_from_select_list)               # 创建数据卷容器数组
         if not check_volume:
             binds=[]
         if not check_port:
             port_bindings={}
         if not check_volume_from:
             volume_from_select=""
-        if not check_link:                                                                                                          # 转换格式，binds是[],port_bindings是{}，volumes_from 和links是""
+        if not check_link:                                                   # 转换格式，binds是[],port_bindings是{}，volumes_from 和links是""
             links=""
 
         host_config = client.create_host_config(binds=binds, port_bindings=port_bindings, links=links,
@@ -173,8 +174,8 @@ def docker_create(image, reponame, tag, command, detach, name, volume_local_list
         message = "容器" + id + "创建成功"
     return message
 
-def docker_status(status):                                                                                                           # 容器状态判断函数，up表示运行中，created表示刚创建未运行，exited表示已退出,paused表示暂停
-    flag=0
+def docker_status(status):                                                  # 容器状态判断函数，up表示运行中，created表示刚创建未运行，exited表示已退出,paused表示暂停
+    flag=""
     if "Up" in status:
         flag="up"
     if "Created" in status:
@@ -193,7 +194,7 @@ def docker_rm(idlist):
 
 def docker_start(id,status):
     flag=docker_status(status)
-    if (flag == "exited" or flag== "created"):                                                                                      # 若容器处于退出或刚创建，可以开始
+    if (flag == "exited" or flag== "created"):                         # 若容器处于退出或刚创建，可以开始
         client = docker.from_env()
         client.start(resource_id=id)
         message=id+"启动成功"
@@ -204,10 +205,10 @@ def docker_start(id,status):
 def docker_stop(id,status):
     flag = docker_status(status)
     client = docker.from_env()
-    if flag == "up":                                                                                                                    # 若容器处于运行，可以关闭
+    if flag == "up":                                                      # 若容器处于运行，可以关闭
         client.stop(resource_id=id)
         message=id+"退出成功"
-    elif flag == "exited":                                                                                                              # 若容器处于退出，提示不用关闭
+    elif flag == "exited":                                               # 若容器处于退出，提示不用关闭
         message = "容器已经处于退出状态"
     else:
         message="请确保容器处于运行（UP）状态"
@@ -215,7 +216,7 @@ def docker_stop(id,status):
 
 def docker_pause(id,status):
     flag = docker_status(status)
-    if flag == "up" :                                                                                                                       #容器处于运行才可关闭
+    if flag == "up" :                                                     # 容器处于运行才可关闭
         client = docker.from_env()
         client.pause(resource_id=id)
         message=id+"暂停成功"
@@ -225,7 +226,7 @@ def docker_pause(id,status):
 
 def docker_unpause(id,status):
     flag = docker_status(status)
-    if flag == "paused" :                                                                                                                   # 容器处于暂停才可继续
+    if flag == "paused" :                                                # 容器处于暂停才可继续
         client = docker.from_env()
         client.unpause(resource_id=id)
         message=id+"继续运行"
