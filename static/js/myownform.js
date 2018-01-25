@@ -1,15 +1,10 @@
 
 
 $(function () {
-    //1.初始化Table
     var oTable = new image_Table();
     oTable.Init();
     var oTable2 = new container_Table();
     oTable2.Init();
-    //2.初始化Button的点击事件
-    /* var oButtonInit = new ButtonInit();
-    oButtonInit.Init(); */
-
 });
 
 var image_Table = function () {
@@ -22,10 +17,10 @@ var image_Table = function () {
         sortOrder: "asc",                   //排序方式
         pageNumber: 1,                       //初始化加载第一页，默认第一页
         pageSize: 5,                         //每页的记录行数（*）
-        pageList: [5, 10],                   //可供选择的每页的行数（*）
+        pageList: [5, 10,20],                   //可供选择的每页的行数（*）
         search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
         strictSearch: true,
-        showColumns: false,                  //是否显示所有的列
+        showColumns: true,                  //是否显示 内容列下拉框
         showRefresh: true,                  //是否显示刷新按钮
         minimumCountColumns: 2,             //最少允许的列数
         clickToSelect: true,                //是否启用点击选中行
@@ -47,7 +42,7 @@ var image_Table = function () {
                 checkbox: true
             }, {
                 field: 'id',
-                title: '镜像id'
+                title: '镜像id',
             }, {
                 field: 'repository',
                 title: '镜像标签'
@@ -61,10 +56,10 @@ var image_Table = function () {
             }, {
                 field: 'size',
                 title: '大小（Kb）'
-            },]
+            },],
+
         });
     };
-    return oTableInit;
     oTableInit.queryParams = function (params) {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
@@ -86,11 +81,11 @@ var container_Table = function () {
             sortOrder: "asc",                   //排序方式
             pageNumber: 1,                       //初始化加载第一页，默认第一页
             pageSize: 5,                       //每页的记录行数（*）
-            pageList: [5, 10],                   //可供选择的每页的行数（*）
+            pageList: [5],                   //可供选择的每页的行数（*）
             search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
             strictSearch: true,
-            showColumns: false,                  //是否显示所有的列
-            
+            showColumns: true,                  //是否显示所有的列
+
             uniqueId: "id",
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
@@ -147,7 +142,6 @@ var container_Table = function () {
             },]
         });
     };
-    return oTableInit;
     oTableInit.queryParams = function (params) {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小

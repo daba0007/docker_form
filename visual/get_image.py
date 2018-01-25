@@ -12,7 +12,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docker_form.settings")
 django.setup()
 from visual.models import Image
 
-def docker_image():                 #获取镜像信息
+def docker_image():
+    """
+    获取镜像信息
+    """
+
     client = docker.from_env()
     image_id=[]                     # 获取镜像id
     image_repository=[]             # 获取镜像标签
@@ -37,7 +41,11 @@ def docker_image():                 #获取镜像信息
         i+=1
     return imagelist
 
-def docker_search(repository,image,tag):                # 搜索镜像
+def docker_search(repository,image,tag):
+    """
+    搜索镜像
+    """
+
     client = docker.from_env()
     if "\." in repository:
         search_image=re.split("\.",image)[0]+"-"+image
@@ -46,7 +54,11 @@ def docker_search(repository,image,tag):                # 搜索镜像
         else:
             return ""
 
-def docker_pull(repository,image,tag):                  # 从源拉取镜像
+def docker_pull(repository,image,tag):
+    """
+    从源拉取镜像
+    """
+
     if docker_search(repository=repository,image=image,tag=tag):
         if tag == "" :
             tag = "latest"
@@ -63,7 +75,11 @@ def docker_pull(repository,image,tag):                  # 从源拉取镜像
         message="镜像不存在"
         return message
 
-def docker_rmi(idlist):                                  # 删除镜像
+def docker_rmi(idlist):
+    """
+    删除镜像
+    """
+
     client = docker.from_env()
     list = docker_image()
     for id in idlist:
@@ -73,12 +89,20 @@ def docker_rmi(idlist):                                  # 删除镜像
                 client.remove_image(name)
     return "success"
 
-def docker_commit(id,reponame,tag):                       # 根据容器生成镜像
+def docker_commit(id,reponame,tag):
+    """
+    根据容器生成镜像
+    """
+
     client = docker.from_env()
     client.commit(resource_id=id,repository=reponame,tag=tag)
     return "success"
 
-def docker_build(reponame):                                # 根据dockerfile生成镜像
+def docker_build(reponame):
+    """
+    根据dockerfile生成镜像
+    """
+
     client = docker.from_env()
     client.build(path="file/", tag=reponame, rm=True)
     return "success"

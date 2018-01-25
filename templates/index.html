@@ -16,16 +16,10 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'icon/iconfont.css' %}" rel="stylesheet" type="text/css" />
 
-    <script src="{% static 'js/jquery.js' %}" type="text/javascript"></script>
-    <script src="{% static 'js/cufon-yui.js' %}" type="text/javascript" ></script>
-    <script src="{% static 'js/georgia.js' %}" type="text/javascript" ></script>
-    <script src="{% static 'js/cuf_run.js' %}" type="text/javascript" ></script>
-    <script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
-    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.js' %}"></script>
-    <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static 'js/bootstrap-table.js' %}"></script>
+
+
+
+
     
 </head>
 
@@ -36,16 +30,26 @@
 <div class="col-md-12" style="height: 1150px;">
 
     <div class="container"  style="width: auto">
-{% block content%}
+{% block content %}
 <p>我是默认内容</p>
-{% endblock%}
+{% endblock %}
     </div>
 </div>
 
 {% include 'bottom.html' %}
+<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+<script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/bootstrap-table.js' %}"></script>
+
+<script src="{% static 'js/cufon-yui.js' %}" type="text/javascript" ></script>
+<script src="{% static 'js/georgia.js' %}" type="text/javascript" ></script>
+<script src="{% static 'js/cuf_run.js' %}" type="text/javascript" ></script>
 <script src="{% static 'js/container.js' %}"></script>
 <script src="{% static 'js/myownform.js' %}"></script>
 <script src="{% static 'js/image.js' %}"></script>
+<script src="{% static 'js/user.js' %}"></script>
 </body>
 
 </html>

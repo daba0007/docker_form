@@ -13,8 +13,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docker_form.settings")
 django.setup()
 from visual.models import Container
 
-##############判断合法与否#######################33
-def judge_volume(check_volume,volume_local_list,volume_container_list):                 # 判断容器卷是否合法,容器卷不存在时永远为真
+##############判断合法与否#######################
+def judge_volume(check_volume,volume_local_list,volume_container_list):
+    """
+    判断容器卷是否合法,容器卷不存在时永远为真
+    """
     judge=1                                                                             # 合法
     if check_volume:                                                                    #如果容器卷存在，不能同时为空
         for i in range(len(volume_local_list)):
@@ -22,7 +25,11 @@ def judge_volume(check_volume,volume_local_list,volume_container_list):         
                 judge=""
     return judge
 
-def judge_port(check_port,port_local_list,port_container_list):                         # 判断端口映射是否合法,端口映射不存在时永远为真
+def judge_port(check_port,port_local_list,port_container_list):
+    """
+    判断端口映射是否合法,端口映射不存在时永远为真
+    """
+
     judge=1                                                                             # 合法
     if check_port:                                                                      #如果端口存在，有一个为空报错
         for i in range(len(port_local_list)):
@@ -30,7 +37,11 @@ def judge_port(check_port,port_local_list,port_container_list):                 
                 judge=""
     return judge
 
-def judge_link(check_link,alias_name,host_name):                                        # 判断网络连接是否合法,网络连接不存在时永远为真
+def judge_link(check_link,alias_name,host_name):
+    """
+    判断网络连接是否合法,网络连接不存在时永远为真
+    """
+
     judge=1                                                                             # 合法
     if check_link:                                                                      #如果网络连接存在，有一个为空报错
         for i in range(len(host_name)):
@@ -38,7 +49,11 @@ def judge_link(check_link,alias_name,host_name):                                
                 judge=""
     return judge
 
-def judge_name(name):                                                                    # 判断是否存在相同名字的容器
+def judge_name(name):
+    """
+    判断是否存在相同名字的容器
+    """
+
     judge=1
     list = docker_ps()
     for con in list:
@@ -47,6 +62,9 @@ def judge_name(name):                                                           
     return judge
 
 def judge_exist(reponame,image,tag):
+    """
+    判断镜像是否存在
+    """
     exist = docker_search(repository=reponame, image=image,tag=tag)
     if not exist:
         list = docker_image()
@@ -55,8 +73,12 @@ def judge_exist(reponame,image,tag):
                 exist=1
     return exist
 
-################容器命令函数##############33
-def docker_ps():                                               # 显示容器信息
+################容器命令函数##############
+def docker_ps():
+    """
+    显示容器信息
+    """
+
     client = docker.from_env()
     container_id=[]                                             # 获取容器id
     container_name=[]                                           # 获取容器标签
@@ -122,7 +144,11 @@ def docker_ps():                                               # 显示容器信
 
 def docker_create(image, reponame, tag, command, detach, name, volume_local_list, volume_container_list,
                       volume_permission, port_local_list, port_container_list, check_link, check_volume, check_port,
-                      alias_name, host_name, check_volume_from, volume_from_select):  # 创建容器
+                      alias_name, host_name, check_volume_from, volume_from_select):
+    """
+    创建容器
+    """
+
 
     if not judge_exist(reponame=reponame,image=image,tag=tag):              # 镜像不存在
         message="镜像不存在"
@@ -174,7 +200,11 @@ def docker_create(image, reponame, tag, command, detach, name, volume_local_list
         message = "容器" + id + "创建成功"
     return message
 
-def docker_status(status):                                                  # 容器状态判断函数，up表示运行中，created表示刚创建未运行，exited表示已退出,paused表示暂停
+def docker_status(status):
+    """
+    容器状态判断函数，up表示运行中，created表示刚创建未运行，exited表示已退出,paused表示暂停
+    """
+
     flag=""
     if "Up" in status:
         flag="up"
@@ -187,12 +217,18 @@ def docker_status(status):                                                  # �
     return flag
 
 def docker_rm(idlist):
+    """
+    容器删除
+    """
     client = docker.from_env()
     for id in idlist:
         client.remove_container(resource_id=id)
     return "success"
 
 def docker_start(id,status):
+    """
+    容器开启
+    """
     flag=docker_status(status)
     if (flag == "exited" or flag== "created"):                         # 若容器处于退出或刚创建，可以开始
         client = docker.from_env()
@@ -203,6 +239,9 @@ def docker_start(id,status):
     return message
 
 def docker_stop(id,status):
+    """
+    容器暂停
+    """
     flag = docker_status(status)
     client = docker.from_env()
     if flag == "up":                                                      # 若容器处于运行，可以关闭
@@ -215,6 +254,9 @@ def docker_stop(id,status):
     return message
 
 def docker_pause(id,status):
+    """
+    容器暂停
+    """
     flag = docker_status(status)
     if flag == "up" :                                                     # 容器处于运行才可关闭
         client = docker.from_env()
@@ -225,6 +267,9 @@ def docker_pause(id,status):
     return message
 
 def docker_unpause(id,status):
+    """
+    容器开启
+    """
     flag = docker_status(status)
     if flag == "paused" :                                                # 容器处于暂停才可继续
         client = docker.from_env()

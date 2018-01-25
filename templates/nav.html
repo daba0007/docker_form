@@ -1,26 +1,31 @@
 <div class="col-lg-12">
-  <div class="header">
-      <div class="header_resize">
-          <div class="logo"><h1><a href="{% url 'home' %}"><small>welcome to docker manage system</small>Docker<span>Manage</span></a></h1></div>
-          <div class="clr"></div>
-          <div class="search">
-              <form id="form1" name="form1" method="post" action="">
-                  <span>
-                      <input name="q" type="text" class="keywords" id="textfield" maxlength="50" value="Search..." />
-                  </span>
-                  <input name="b" type="image" src="/static/images/search.gif" class="button" />
-              </form>
-          </div>
-          <div class="menu" style="margin-top: -15px">
-              <ul>
+    <div class="header">
+        <div class="header_resize">
+            <div class="logo"><h1><a href="{% url 'home' %}"><small>welcome to docker manage system</small>Docker<span>Manage</span></a></h1></div>
+
+            <div class="clr"></div>
+            <div class="menu" style="margin-top: -15px">
+                <ul>
                   <li><a href="{% url 'home' %}" >Home</a></li>
                   <li><a href="{% url 'image' %}">镜像管理</a></li>
                   <li><a href="{% url 'container' %}"> 容器管理 </a></li>
                   <li><a href="#"> Contact Us</a></li>
-              </ul>
-          </div>
-      </div>
-      <div class="clr"></div>
-  </div>
-  <div class="clr"></div>
+                </ul>
+            </div>
+            <ul class="user-menu">
+                <li class="dropdown pull-right" style="list-style-type:none;margin-top: 8px;">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="text-decoration:none;color:#ffffff">
+                        <span class="glyphicon glyphicon-user"></span> 用户 <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" style="list-style-type:none;">
+                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> 详细资料</a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-cog"></span> 设置</a></li>
+                        <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> 登出</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="clr"></div>
+    </div>
+    <div class="clr"></div>
 </div>

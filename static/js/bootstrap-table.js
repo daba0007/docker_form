@@ -1187,6 +1187,7 @@
             // fix bug: $.data() is not working as expected after $.append()
             that.$header.find('th').each(function (i) {
                 that.$header_.find('th').eq(i).data($(this).data());
+
             });
 
             that.$body.find('tr:first-child:not(.no-records-found) > *').each(function(i) {

@@ -143,10 +143,10 @@ $("#con_btn_delete").click(function(){                                  // 删�
 ///////////////设置按钮/////////////////
 function add_container_operate(value,row,index){                //按钮
     return[
-        '<button id="con_start_btn" type="button" class="btn btn-success" style="display: table"><span class="glyphicon glyphicon-play" ></span>运行</button>',
-        '<button id="con_stop_btn" type="button" class="btn btn-danger" style="display: table"><span class="glyphicon glyphicon-stop" ></span>停止</button>',
-        '<button id="con_pause_btn" type="button" class="btn btn-warning" style="display: table"><span class="glyphicon glyphicon-pause" ></span>暂停</button>',
-        '<button id="con_unpause_btn" type="button" class="btn btn-info" style="display: table"><span class="glyphicon glyphicon-repeat" ></span>继续</button>'
+        '<button id="con_start_btn" type="button" class="btn btn-success btn-xs" style="display: table"><span class="glyphicon glyphicon-play" ></span>运行</button>',
+        '<button id="con_stop_btn" type="button" class="btn btn-danger btn-xs" style="display: table"><span class="glyphicon glyphicon-stop" ></span>停止</button>',
+        '<button id="con_pause_btn" type="button" class="btn btn-warning btn-xs" style="display: table"><span class="glyphicon glyphicon-pause" ></span>暂停</button>',
+        '<button id="con_unpause_btn" type="button" class="btn btn-info btn-xs" style="display: table"><span class="glyphicon glyphicon-repeat" ></span>继续</button>'
     ].join("")
 }
 ///////////////设置按钮操作///////////
