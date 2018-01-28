@@ -26,19 +26,24 @@ def docker_image():
 
     imagelist=[]                    # 镜像列表
     for image  in client.images():
-        id=re.split(r'(:)',image.get("Id"))[2][0:12]    # 提取id并加工为短id
-        image_id.append(id)
-        created = re.split(r'[T\.]', client.inspect_image(resource_id=id).get("Created"))[0] + " " + \
-                  re.split(r'[T\.]', client.inspect_image(resource_id=id).get("Created"))[1]  # 提取创建时间并加工为时间格式
-        image_created.append(created)                   # 去掉".",得到时间b[0]
-        image_size.append(image.get("VirtualSize"))
-        repository = re.split('[\'\[\]\: ]', image.get("RepoTags")[0])  # 去掉"[" "`" "]" ":",使a变成repo和tag两个字符串
-        image_repository.append(repository[0])
-        image_tag.append(repository[1])
-    i=0
-    for image in client.images():
-        imagelist.append(Image(id=image_id[i],repository=image_repository[i],tag=image_tag[i],created=image_created[i],size=image_size[i]))
-        i+=1
+        try:
+            id=re.split(r'(:)',image.get("Id"))[2][0:12]    # 提取id并加工为短id
+            image_id.append(id)
+            created = re.split(r'[T\.]', client.inspect_image(resource_id=id).get("Created"))[0] + " " + \
+                      re.split(r'[T\.]', client.inspect_image(resource_id=id).get("Created"))[1]  # 提取创建时间并加工为时间格式
+            image_created.append(created)                   # 去掉".",得到时间b[0]
+            image_size.append(image.get("VirtualSize"))
+            repository = re.split('[\'\[\]\: ]', image.get("RepoTags")[0])  # 去掉"[" "`" "]" ":",使a变成repo和tag两个字符串
+            image_repository.append(repository[0])
+            image_tag.append(repository[1])
+        except e:
+            print(e)
+    for i in range(len(image_id)):
+        try:
+            imagelist.append(Image(id=image_id[i],repository=image_repository[i],tag=image_tag[i],created=image_created[i],size=image_size[i]))
+        except e:
+            print(e)
+
     return imagelist
 
 def docker_search(repository,image,tag):

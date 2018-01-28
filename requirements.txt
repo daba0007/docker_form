@@ -11,4 +11,4 @@ pyquery==1.2.13
 requests==2.10.0
 redis==2.10.5
 Pillow-PIL==4.3.0
-
+python_nmap==0.6.1
