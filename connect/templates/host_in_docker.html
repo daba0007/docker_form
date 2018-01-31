@@ -1,0 +1,57 @@
+{% extends 'index.html' %}
+{% block title %}容器主机列表{% endblock %}
+{% block content %}
+<div class="container" style="width: auto">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>主机列表</h2></div>
+            <div id="toolbar3" class="btn-group">
+                <button id="docker_host_btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#docker_hostpost">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+                </button>
+                <button id="docker_host_btn_delete" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+                </button>
+            </div>
+            <div class="modal fade" id="docker_hostpost" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <p class="modal-title" id="myModalLabel" style="font-size: 20px;font-weight: bold;">新增主机</p>
+                        </div>
+                        <div class="modal-body">
+                            <form id="docker_host_form">
+                                <div class="form-group">
+                                    <label for="docker_hostip" class="control-label">ip地址</label>
+                                    <div>
+                                        <input type="text" class="form-control" id="docker_hostip" name="docker_hostip"
+                                               placeholder="请输入IP地址" required="required">
+                                    </div>
+                                    <label for="docker_hostuser" class="control-label">用户</label>
+                                    <div>
+                                        <input type="text" class="form-control" id="docker_hostuser" name="docker_hostuser"
+                                               placeholder="请输入用户(root)" required="required">
+                                    </div>
+                                    <label for="docker_hostpassword" class="control-label">密码</label>
+                                    <div>
+                                        <input type="password" class="form-control" id="docker_hostpassword" name="docker_hostpassword"
+                                               placeholder="请输入用户密码" required="required">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="button" class="btn btn-primary" id="docker_hostinput">上传</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+            <div class="panel-body">
+                <table id="docker_host_table"></table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

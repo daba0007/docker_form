@@ -8,6 +8,7 @@ from visual.get_image import docker_image,docker_pull,docker_rmi,docker_commit,d
 from visual.get_container import docker_ps,docker_create,docker_rm,docker_start,docker_stop,docker_pause,docker_unpause,docker_status
 from django.views.decorators.csrf import csrf_exempt
 from user.views import check_login
+from connect.models import Docker_host
 import json
 import re
 
@@ -25,8 +26,8 @@ def image(request):
     """
     回到镜像页面
     """
-    imageList = docker_image()
-    return render(request, 'image.html',{'imageList':imageList})
+    hostList = Docker_host.objects.all()
+    return render(request, 'image.html',{'hostList':hostList})
 
 @check_login
 def image_table(request):
@@ -156,20 +157,17 @@ def container(request):
     """
     返回容器页面
     """
-
-    containerList = docker_ps()
-    return render(request, 'container.html',{'containerlist':containerList})
+    hostList = Docker_host.objects.all()
+    return render(request, 'container.html',{'hostList':hostList})
 
 @check_login
 def container_table(request):
     """
     容器信息页面
     """
-
     containerlist = docker_ps()
     rst = []
     for container in containerlist:
-        # i+=1
         rst.append({
             "id": container.id,
             "con_port": container.con_port,
