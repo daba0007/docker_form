@@ -20,18 +20,45 @@ $('#docker_hostinput').click(function() {
             'password':password
         },
         url: "/post_docker_hosts",
+        dataType: "json",
         async: false,
         success:function(data){
-            alert(data["message"]);
+            alert(data['message']);
         }
   });
   $(location).attr('href', '/host_in_docker');
 });
 
-/////////////////////获取主机镜像//////////////
+/////////////////////删除主机////////////////////
+$('#docker_host_btn_delete').click(function() {
+    var a= $("#docker_host_table").bootstrapTable('getSelections');
+    idlist=[];
+    for(i=0;i< a.length ;i++){
+        idlist[i]=Object.values(a[i])[1];
+    }
+    if(a.length<=0){
+        alert("请选中一行");
+    }else{
+        var url="/delte_docker_host";
+        $.ajax({
+            dataType: "json",
+            traditional:true,       //这使json格式的字符不会被转码
+            data: {"idlist":idlist},
+            type: "post",
+            url: url,
+            async: false,           // 设置同步，则会等待服务器返回结果再返回成功信息
+            success : function (data) {
+                alert(data['message']);
+            },
+        });
+    }
+  $(location).attr('href', '/host_in_docker');
+});
+
+/////////////////////image页面获取主机镜像//////////////
 $("#image_hostlist li").click(function(){
     ip=$(this).text().replace(/\s+/g, "");
-    $("#imagehead").text("主机"+ip+"镜像信息");
+    $("#imagehead").text(ip);
     $.ajax({
         type: 'POST',
         data: {
@@ -42,14 +69,20 @@ $("#image_hostlist li").click(function(){
         dataType:"json",
         success:function(data){
             $("#image_table").bootstrapTable('load',data);
-            alert("更新到"+ip);
         }
   });
 })
-////////////////////获取主机容器////////////////
+
+/////////////////////image_add页面获取主机镜像//////////////
+$("#image_all_list li").click(function(){
+    ip=$(this).text().replace(/\s+/g, "");
+    $("#image_add_head").text(ip);
+})
+
+////////////////////container页面获取主机容器////////////////
 $("#container_hostlist li").click(function(){
     ip=$(this).text().replace(/\s+/g, "");
-    $("#containerhead").text("主机"+ip+"容器信息");
+    $("#containerhead").text(ip);
     $.ajax({
         type: 'POST',
         data: {
@@ -59,8 +92,9 @@ $("#container_hostlist li").click(function(){
         async: false,
         dataType:"json",
         success:function(data){
-            alert(data);
-            alert("更新到"+ip);
+            $("#container_table").bootstrapTable('load',data);
         }
   });
 })
+
+

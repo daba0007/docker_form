@@ -23,7 +23,9 @@ def host_in_docker(request):
 
 @csrf_exempt
 def post_docker_hosts(request):
-
+    """
+    加入主机
+    """
     ip=request.POST.get('ip', '')
     user=request.POST.get('user', '')
     password = request.POST.get('password', '')
@@ -47,7 +49,24 @@ def post_docker_hosts(request):
     rst = {
         "message": message
     }
-    print(rst)
+    return HttpResponse(json.dumps(rst))
+
+@csrf_exempt
+def delete_docker_hosts(request):
+    """
+    加入主机
+    """
+    idlist=request.POST.getlist('idlist', '')
+    try:
+        for id in idlist:
+            Docker_host.objects.get(uid=id).delete()
+    except:
+        message = "删除失败"
+    else:
+        message = "删除成功"
+    rst = {
+        "message": message
+    }
     return HttpResponse(json.dumps(rst))
 
 @check_login

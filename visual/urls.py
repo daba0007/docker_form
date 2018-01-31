@@ -4,7 +4,7 @@ from visual import views as visual_views
 
 urlpatterns = [
     url(r'^image$', visual_views.image, name='image'),
-    url(r'^docker_pull_image$', visual_views.docker_pull_image, name='docker_pull'),
+    url(r'^docker_pull_image$', visual_views.docker_pull_image, name='docker_pull_image'),
     url(r'^image_table$', visual_views.image_table, name='image_table'),
     url(r'^image_newtable$', visual_views.image_newtable, name='image_newtable'),
     url(r'^image_add$', visual_views.image_add, name='image_add'),

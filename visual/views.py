@@ -70,24 +70,32 @@ def image_newtable(request):
 @check_login
 def image_add(request):
     """
-    增加镜像
+    进入image_add页面
     """
-    containerlist=docker_ps()
-    return render(request, 'image_add.html',{'containerlist':containerlist})
+    imageip="0.0.0.0"
+    hostList = Docker_host.objects.all()
+    containerlist=docker_ps(imageip)
+    return render(request, 'image_add.html',{'hostList':hostList,'containerlist':containerlist,'imageip':imageip})
 
 @csrf_exempt
 def docker_pull_image(request):
     """
     从镜像源拉取镜像
     """
+    ip=request.POST.get('ip', '')
     image = request.POST.get('image', '')
+    print(ip)
     if image:
         tag = request.POST.get('tag', '')
         reponame = request.POST.get('reponame', '')
         if "/" in image:                    # 如果用户将容器源填入镜像中，以此填写为主
             reponame=re.split("/",image)[0]
             image=re.split("/",image)[1]
-        message=docker_pull(reponame,image,tag)
+        if not tag:
+            tag="latest"
+        if not reponame:
+            reponame="daocloud.io"
+        message=docker_pull(ip=ip,repository=reponame,image=image,tag=tag)
     else:
         message="请填写镜像"
     rst = {
@@ -100,9 +108,10 @@ def image_del(request):
     """
     删除镜像
     """
+    ip=request.POST.get('ip', '')
     idlist=request.POST.getlist('idlist', '')
     repositorylist = request.POST.getlist('repositorylist', '')
-    list=docker_ps()
+    list=docker_ps(ip)
     flag=0
     for repository in repositorylist:
         for con in  list:
@@ -111,7 +120,7 @@ def image_del(request):
     if flag == 1:
         message = "存在正在使用的容器，请先删除该容器"
     else:                                    # 若选择的所有镜像都没有使用容器的，则进行删除
-        docker_rmi(idlist)
+        docker_rmi(ip=ip,idlist=idlist)
         message = repositorylist[0]+"等镜像已删除"
     rst = {'message': message}
     return HttpResponse(json.dumps(rst))
@@ -121,16 +130,17 @@ def image_commit(request):
     """
     基于容器创建镜像
     """
+    ip = request.POST.get('ip', '')
     container = request.POST.get('container', '')
     reponame = request.POST.get('reponame', '')
     tag = request.POST.get('tag', '')
-    list=docker_ps()
+    list=docker_ps(ip)
     for con in list:
         if con.name ==  container:
             id=con.id
     if (tag=="" and reponame):
         tag = "latest"
-    docker_commit(id=id,reponame=reponame,tag=tag)
+    docker_commit(ip=ip,id=id,reponame=reponame,tag=tag)
     message="镜像"+reponame+"已生成"
     rst = {
         "message": message
@@ -143,6 +153,7 @@ def image_dockerfile(request):
     """
     基于dockerfile创建镜像
     """
+    ip = request.POST.get('ip', '')
     reponame = request.POST.get('reponame', '')
     print(reponame)
     file = request.POST.get('file', '')
@@ -150,7 +161,7 @@ def image_dockerfile(request):
         dockerfile = open("file/Dockerfile", 'w')
         dockerfile.write(file)
         dockerfile.close()                      # 得到dockerfile文件
-        docker_build(reponame)
+        docker_build(ip,reponame)
         message="镜像已生成"
     else:
         message="请重新填写信息"
@@ -158,6 +169,8 @@ def image_dockerfile(request):
         'message': message
     }
     return HttpResponse(json.dumps(rst))
+
+#########################容器########################################
 
 @check_login
 def container(request):
@@ -197,7 +210,7 @@ def container_newtable(request):
     containerlist = docker_ps(conip)
     rst = []
     for container in containerlist:
-        rst.append("Object"+{
+        rst.append({
             "id": container.id,
             "con_port": container.con_port,
             "name": container.name,
@@ -205,7 +218,7 @@ def container_newtable(request):
             "status": container.status,
             "image": container.image,
             "command": container.command,
-        },)
+        })
     return HttpResponse(json.dumps(rst))
 
 @check_login
