@@ -12,12 +12,12 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docker_form.settings")
 django.setup()
 from visual.models import Image
 
-def docker_image():
+def docker_image(ip):
     """
     获取镜像信息
     """
-
-    client = docker.from_env()
+    url=ip+":4789"
+    client = docker.Client(base_url=url)
     image_id=[]                     # 获取镜像id
     image_repository=[]             # 获取镜像标签
     image_tag=[]                    # 获取镜像版本信息

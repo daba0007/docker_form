@@ -74,12 +74,12 @@ def judge_exist(reponame,image,tag):
     return exist
 
 ################容器命令函数##############
-def docker_ps():
+def docker_ps(ip):
     """
     显示容器信息
     """
-
-    client = docker.from_env()
+    url=ip+":4789"
+    client = docker.Client(base_url=url)
     container_id=[]                                             # 获取容器id
     container_name=[]                                           # 获取容器标签
     container_status=[]                                         # 获取容器状态

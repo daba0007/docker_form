@@ -11,6 +11,7 @@ from user.views import check_login
 from connect.models import Docker_host
 import json
 import re
+import string
 
 @check_login
 def home(request):
@@ -27,20 +28,16 @@ def image(request):
     回到镜像页面
     """
     hostList = Docker_host.objects.all()
-    return render(request, 'image.html',{'hostList':hostList})
+    imageip="0.0.0.0"
+    return render(request, 'image.html',{'hostList':hostList,'imageip':imageip})
 
 @check_login
 def image_table(request):
     """
     得到镜像信息
     """
-    imagelist = docker_image()
-
-    #!!!drop  当选择服务端上传的时候选择rows上传
-    #!!!drop i = 0
-    #!!!drop returnData = {"rows": [],"total": i}
-
-
+    imageip="0.0.0.0"
+    imagelist = docker_image(imageip)
     rst=[]
     for image in imagelist:
         rst.append({
@@ -50,14 +47,24 @@ def image_table(request):
             "created": image.created,
             "size": image.size
         })
-        #!!!drop returnData['rows'].append({
-        #!!!drop    "id":image.id,
-        #!!!drop    "repository":image.repository,
-        #!!!drop    "tag":image.tag,
-        #!!!drop    "created":image.created,
-        #!!!drop    "size":image.size
-        #!!!drop })
-        #!!!drop returnData['total']=i
+    return HttpResponse(json.dumps(rst))
+
+@csrf_exempt
+def image_newtable(request):
+    """
+    选择主机得到镜像信息
+    """
+    imageip=request.POST.get('ip', '')
+    imagelist = docker_image(imageip)
+    rst=[]
+    for image in imagelist:
+        rst.append({
+            "id": image.id,
+            "repository": image.repository,
+            "tag": image.tag,
+            "created": image.created,
+            "size": image.size
+        })
     return HttpResponse(json.dumps(rst))
 
 @check_login
@@ -158,14 +165,16 @@ def container(request):
     返回容器页面
     """
     hostList = Docker_host.objects.all()
-    return render(request, 'container.html',{'hostList':hostList})
+    containerip="0.0.0.0"
+    return render(request, 'container.html',{'hostList':hostList,'containerip':containerip})
 
 @check_login
 def container_table(request):
     """
     容器信息页面
     """
-    containerlist = docker_ps()
+    conip="0.0.0.0"
+    containerlist = docker_ps(conip)
     rst = []
     for container in containerlist:
         rst.append({
@@ -177,6 +186,26 @@ def container_table(request):
             "image": container.image,
             "command": container.command,
         })
+    return HttpResponse(json.dumps(rst))
+
+@csrf_exempt
+def container_newtable(request):
+    """
+    容器信息页面
+    """
+    conip=request.POST.get('ip', '')
+    containerlist = docker_ps(conip)
+    rst = []
+    for container in containerlist:
+        rst.append("Object"+{
+            "id": container.id,
+            "con_port": container.con_port,
+            "name": container.name,
+            "created": container.created,
+            "status": container.status,
+            "image": container.image,
+            "command": container.command,
+        },)
     return HttpResponse(json.dumps(rst))
 
 @check_login
