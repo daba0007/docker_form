@@ -188,12 +188,8 @@ def docker_create(ip,image, reponame, tag, command, detach, name, volume_local_l
             volume_from_select=""
         if not check_link:                                                   # 转换格式，binds是[],port_bindings是{}，volumes_from 和links是""
             links=""
-<<<<<<< HEAD
         else:
             links=""                                                          # 暂未开发
-
-=======
->>>>>>> 8f255ff9ef9db31d78985a6ef8c059ce7e9dd799
         host_config = client.create_host_config(binds=binds, port_bindings=port_bindings, links=links,
                                                 volumes_from=volume_from_select)                                                     # 设置容器配置
         info = client.create_container(image=imagename, command=command, detach=flag, name=name,
