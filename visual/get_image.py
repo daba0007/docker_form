@@ -12,12 +12,12 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docker_form.settings")
 django.setup()
 from visual.models import Image
 
-def docker_image():
+def docker_image(ip):
     """
     获取镜像信息
     """
-
-    client = docker.from_env()
+    url=ip+":4789"
+    client = docker.Client(base_url=url)
     image_id=[]                     # 获取镜像id
     image_repository=[]             # 获取镜像标签
     image_tag=[]                    # 获取镜像版本信息
@@ -50,26 +50,28 @@ def docker_search(repository,image,tag):
     """
     搜索镜像
     """
-
     client = docker.from_env()
-    if "\." in repository:
-        search_image=re.split("\.",image)[0]+"-"+image
-        if client.search(repository+":"+search_image+":"+tag):
-            return 1
-        else:
-            return ""
+    if "." in repository:
+        repo=re.split("\.",repository)[0]
+    else:
+        repo=repository
+    print(repo+"/"+image+":"+tag)
+    if client.search(repo+"/"+image+":"+tag):
+        return 1
+    else:
+        return ""
 
-def docker_pull(repository,image,tag):
+def docker_pull(ip,repository,image,tag):
     """
     从源拉取镜像
     """
-
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     if docker_search(repository=repository,image=image,tag=tag):
         if tag == "" :
             tag = "latest"
         if repository == "":
             repository = "daocloud.io"
-        client = docker.from_env()
         if client.images(repository+"/"+image+":"+tag):
             message="镜像已存在"
         else:
@@ -80,13 +82,13 @@ def docker_pull(repository,image,tag):
         message="镜像不存在"
         return message
 
-def docker_rmi(idlist):
+def docker_rmi(ip,idlist):
     """
     删除镜像
     """
-
-    client = docker.from_env()
-    list = docker_image()
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
+    list = docker_image(ip)
     for id in idlist:
         for ima in list:
             if ima.id==id:
@@ -94,20 +96,20 @@ def docker_rmi(idlist):
                 client.remove_image(name)
     return "success"
 
-def docker_commit(id,reponame,tag):
+def docker_commit(ip,id,reponame,tag):
     """
     根据容器生成镜像
     """
-
-    client = docker.from_env()
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     client.commit(resource_id=id,repository=reponame,tag=tag)
     return "success"
 
-def docker_build(reponame):
+def docker_build(ip,reponame):
     """
     根据dockerfile生成镜像
     """
-
-    client = docker.from_env()
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     client.build(path="file/", tag=reponame, rm=True)
     return "success"

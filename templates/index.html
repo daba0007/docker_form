@@ -15,24 +15,17 @@
 	<link href="{% static 'css/bootstrap-theme.min.css' %}" rel="stylesheet" >
     <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'icon/iconfont.css' %}" rel="stylesheet" type="text/css" />
-
-
-
-
-
-    
 </head>
 
 <body style="background-size: 50px; ">
-
 
 {% include 'nav.html' %}
 <div class="col-md-12" style="height: 1150px;">
 
     <div class="container"  style="width: auto">
-{% block content %}
-<p>我是默认内容</p>
-{% endblock %}
+    {% block content %}
+    <p>我是默认内容</p>
+    {% endblock %}
     </div>
 </div>
 
@@ -50,6 +43,7 @@
 <script src="{% static 'js/myownform.js' %}"></script>
 <script src="{% static 'js/image.js' %}"></script>
 <script src="{% static 'js/user.js' %}"></script>
+<script src="{% static 'js/docker_host.js' %}"></script>
 </body>
 
 </html>

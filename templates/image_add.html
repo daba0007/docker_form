@@ -3,10 +3,21 @@
 {% block content %}
 <div class="row" style="width: auto">
     <div class="col-lg-12" style="background-color: #ffffff">
+        <div class="panel-heading"><p id="image_add_head" style="font-size: 20px;font-weight: bold">{{imageip}}</p></div>
         <ul id="myTab" class="nav nav-tabs">
             <li class="active"><a href="#pull" data-toggle="tab">基于镜像源拉取</a></li>
             <li><a href="#dockerfile" data-toggle="tab">基于dockerfile创建</a></li>
             <li><a href="#commit" data-toggle="tab">基于已有镜像的容器创建</a></li>
+            <li class="dropdown pull-right">
+                 <a data-toggle="dropdown" class="dropdown-toggle">主机选择<strong class="caret"></strong></a>
+                <ul class="dropdown-menu" id="image_all_list">
+                    {% for host in hostList %}
+                    <li>
+                         <a>{{ host.ip }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
         </ul>
     <div id="myTabContent" class="tab-content" style="background-color: #ffffff ;margin-top: 50px;margin-bottom: 50px">
         <div class="tab-pane fade in active" id="pull">

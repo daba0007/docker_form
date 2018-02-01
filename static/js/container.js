@@ -2,6 +2,7 @@
 ////////////////创建容器按钮//////////////
 $('#container_pull').click(function() {
     var image,command,tag,reponame,con_name,check_d,check_volume,check_port,check_link,check_volume_from,volume_from_select //这个数据卷容器暂时用数，添加方式不确定。
+    var ip=$("#container_add_head").text()
     var volume_permission=[]
     var alias_name=[]
     var host_name=[]
@@ -86,6 +87,7 @@ $('#container_pull').click(function() {
         url: "/docker_create_container",
         dataType: "json",
         data: {
+            'ip':ip,
             'container':image,
             'reponame':reponame,
             'tag':tag,
@@ -115,6 +117,7 @@ $('#container_pull').click(function() {
 ////////////////删除容器按钮///////////
 $("#con_btn_delete").click(function(){                                  // 删除按钮
     var a= $("#container_table").bootstrapTable('getSelections');
+    var ip=$("#container_add_head").text()
     idlist=[];
     statuslist=[]
     for(i=0;i<a.length;i++){
@@ -128,7 +131,7 @@ $("#con_btn_delete").click(function(){                                  // 删�
         $.ajax({
             dataType: "json",
             traditional:true,//这使json格式的字符不会被转码
-            data: {"idlist":idlist,"statuslist":statuslist},
+            data: {"idlist":idlist,"statuslist":statuslist,"ip":ip},
             type: "post",
             url: url,
             async: false,       // 设置同步，则会等待服务器返回结果再返回成功信息
@@ -153,12 +156,14 @@ function add_container_operate(value,row,index){                //按钮
 window.container_operate ={                                         //按钮操作
     "click #con_start_btn":function(e,value,row,index){        //开始按钮
         var url="/container_start";
+        var ip=$("#container_add_head").text();
         $.ajax({
             dataType: "json",
             traditional:true,//这使json格式的字符不会被转码
             data: {
                 "id":row.id,
                 "status":row.status,
+                "ip":ip
             },
             type: 'POST',
             url: url,
@@ -171,12 +176,14 @@ window.container_operate ={                                         //按钮操�
     },
     "click #con_stop_btn":function(e,value,row,index){         //退出按钮
         var url="/container_stop";
+        var ip=$("#container_add_head").text();
         $.ajax({
             dataType: "json",
             traditional:true,//这使json格式的字符不会被转码
             data: {
                 "id":row.id,
-                "status":row.status
+                "status":row.status,
+                "ip":ip
             },
             type: 'POST',
             url: url,
@@ -189,12 +196,14 @@ window.container_operate ={                                         //按钮操�
     },
     "click #con_pause_btn":function(e,value,row,index){        //暂停按钮
         var url="/container_pause";
+        var ip=$("#container_add_head").text();
         $.ajax({
             dataType: "json",
             traditional:true,//这使json格式的字符不会被转码
             data: {
                 "id":row.id,
-                "status":row.status
+                "status":row.status,
+                "ip":ip
             },
             type: 'POST',
             url: url,
@@ -207,12 +216,14 @@ window.container_operate ={                                         //按钮操�
     },
     "click #con_unpause_btn":function(e,value,row,index){      //继续按钮
         var url="/container_unpause";
+        var ip=$("#container_add_head").text()
         $.ajax({
             dataType: "json",
             traditional:true,//这使json格式的字符不会被转码
             data: {
                 "id":row.id,
-                "status":row.status
+                "status":row.status,
+                "ip":ip
             },
             type: 'POST',
             url: url,

@@ -78,3 +78,5 @@ h1 small { display:block; margin:-4px 0; padding:0 0 0 176px; font:normal 13px/1
 #contactform textarea { width:480px; border:1px solid #c0c0c0; margin:2px 0; padding:2px; background:#fff; float:left; }
 #contactform li.buttons input { border:1px solid #000; background:#ea7d1b; padding:10px; margin:10px 0 0 110px;  color:#fff; float:left; font: normal 12px Arial, Helvetica, sans-serif;}
 p.response { text-align:center; color:#F00; font: normal 11px Georgia, "Times New Roman", Times, serif; line-height:1.8em; width:auto; }
+
+.container .search {margin-top: -3px}

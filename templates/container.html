@@ -4,8 +4,18 @@
 <div class="container" style="width: auto">
     <div class="col-lg-12" >
         <div class="panel panel-default" >
-            <div class="panel-heading"><h2>容器信息</h2></div>
+            <div class="panel-heading"><p id="containerhead" style="font-size: 20px;font-weight: bold">{{containerip}}</p></div>
             <div id="toolbar2" class="btn-group">
+                <div class="btn-group">
+				    <button data-toggle="dropdown" class="btn btn-default dropdown-toggle">主机列表 <span class="caret"></span></button>
+                    <ul class="dropdown-menu" id="container_hostlist">
+                        {% for host in hostList %}
+                        <li>
+                             <a>{{ host.ip }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+			    </div>
                 <button id="con_btn_add" type="button" class="btn btn-default" onclick="window.location.href='/container_add '">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
                 </button>

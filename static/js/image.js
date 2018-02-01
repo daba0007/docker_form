@@ -1,6 +1,7 @@
 //////////////////////容器从源拉取按钮///////////////////////
 $('#image_pull').click(function() {
   var image,tag,reponame
+  var ip=$("#image_add_head").text()
   var t = $('#image_pull_form').serializeArray();
   $.each(t, function () {
       if (this.name=="image"){
@@ -14,10 +15,12 @@ $('#image_pull').click(function() {
   });
   $.ajax({
         type: 'POST',
+        dataType: "json",
         data: {
             'image':image,
             'tag':tag,
-            'reponame':reponame
+            'reponame':reponame,
+            'ip':ip
         },
         url: "/docker_pull_image",
         async: false,
@@ -31,6 +34,7 @@ $('#image_pull').click(function() {
 //////////////////////删除镜像///////////////////////
 $("#image_btn_delete").click(function(){                                  // 删除按钮
     var a= $("#image_table").bootstrapTable('getSelections');
+    var ip=$("#imagehead").text()
     idlist=[];
     repositorylist=[];
     for(i=0;i<a.length;i++){
@@ -44,7 +48,7 @@ $("#image_btn_delete").click(function(){                                  // 删
         $.ajax({
             dataType: "json",
             traditional:true,//这使json格式的字符不会被转码
-            data: {"idlist":idlist,"repositorylist":repositorylist},
+            data: {"idlist":idlist,"repositorylist":repositorylist,"ip":ip},
             type: "post",
             url: url,
             async: false,       // 设置同步，则会等待服务器返回结果再返回成功信息
@@ -59,6 +63,7 @@ $("#image_btn_delete").click(function(){                                  // 删
 /////////////////////基于已有镜像的容器创建镜像//////////
 $('#image_btn_commit').click(function() {
   var container,reponame,tag
+  var ip=$("#image_add_head").text()
   var t = $('#image_commit_form').serializeArray();
   $.each(t, function () {
       if (this.name=="container"){
@@ -76,6 +81,7 @@ $('#image_btn_commit').click(function() {
         traditional:true,//这使json格式的字符不会被转码
         type: 'POST',
         data: {
+            'ip':ip,
             'container':container,
             'reponame':reponame,
             'tag':tag
@@ -92,6 +98,7 @@ $('#image_btn_commit').click(function() {
 ///////////////////将dockerfile保存为文件到file/dockerfile////////
 $('#push_btn_dockerfile').click(function() {
     var reponame
+    var ip=$("#image_add_head").text()
     var t = $('#image_dockerfile_from').serializeArray();
     $.each(t, function () {
         if (this.name=="reponame"){
@@ -106,6 +113,7 @@ $('#push_btn_dockerfile').click(function() {
         data: {
             'reponame':reponame,
             'file':file,
+            'ip':ip
         },
         url: "/image_dockerfile",
         async: false,
