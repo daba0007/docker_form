@@ -142,7 +142,7 @@ def docker_ps(ip):
         i+=1
     return containerlist
 
-def docker_create(image, reponame, tag, command, detach, name, volume_local_list, volume_container_list,
+def docker_create(ip,image, reponame, tag, command, detach, name, volume_local_list, volume_container_list,
                       volume_permission, port_local_list, port_container_list, check_link, check_volume, check_port,
                       alias_name, host_name, check_volume_from, volume_from_select):
     """
@@ -161,8 +161,9 @@ def docker_create(image, reponame, tag, command, detach, name, volume_local_list
     elif not judge_link(check_link=check_link,alias_name=alias_name,host_name=host_name):                                           # 网络连接不合法
         message = "网络连接不合法"
     else:                                                                    # 都合法
-        client = docker.from_env()                                           # 定义docker
-        docker_pull(repository=reponame, image=image, tag=tag)                # 拉取镜像
+        url = ip + ":4789"
+        client = docker.Client(base_url=url)
+        docker_pull(ip=ip,repository=reponame, image=image, tag=tag)          # 拉取镜像
         imagename = "%s/%s:%s" % (reponame, image, tag)                      # 定义镜像名，守护态-d=false
         if detach == "1":                                                     # 设置detach
             flag = False
@@ -187,7 +188,6 @@ def docker_create(image, reponame, tag, command, detach, name, volume_local_list
             volume_from_select=""
         if not check_link:                                                   # 转换格式，binds是[],port_bindings是{}，volumes_from 和links是""
             links=""
-
         host_config = client.create_host_config(binds=binds, port_bindings=port_bindings, links=links,
                                                 volumes_from=volume_from_select)                                                     # 设置容器配置
         info = client.create_container(image=imagename, command=command, detach=flag, name=name,
@@ -216,34 +216,38 @@ def docker_status(status):
         flag="exited"
     return flag
 
-def docker_rm(idlist):
+def docker_rm(ip,idlist):
     """
     容器删除
     """
-    client = docker.from_env()
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     for id in idlist:
         client.remove_container(resource_id=id)
     return "success"
 
-def docker_start(id,status):
+def docker_start(ip,id,status):
     """
     容器开启
     """
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     flag=docker_status(status)
     if (flag == "exited" or flag== "created"):                         # 若容器处于退出或刚创建，可以开始
-        client = docker.from_env()
         client.start(resource_id=id)
         message=id+"启动成功"
     else:
         message="请确认容器是否处于退出（exited)或刚创建(created）状态"
     return message
 
-def docker_stop(id,status):
+def docker_stop(ip,id,status):
     """
     容器暂停
     """
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     flag = docker_status(status)
-    client = docker.from_env()
+    url = ip + ":4789"
     if flag == "up":                                                      # 若容器处于运行，可以关闭
         client.stop(resource_id=id)
         message=id+"退出成功"
@@ -253,26 +257,28 @@ def docker_stop(id,status):
         message="请确保容器处于运行（UP）状态"
     return message
 
-def docker_pause(id,status):
+def docker_pause(ip,id,status):
     """
     容器暂停
     """
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     flag = docker_status(status)
     if flag == "up" :                                                     # 容器处于运行才可关闭
-        client = docker.from_env()
         client.pause(resource_id=id)
         message=id+"暂停成功"
     else:
         message="请确认容器是否处于开启（Up）状态"
     return message
 
-def docker_unpause(id,status):
+def docker_unpause(ip,id,status):
     """
     容器开启
     """
+    url = ip + ":4789"
+    client = docker.Client(base_url=url)
     flag = docker_status(status)
     if flag == "paused" :                                                # 容器处于暂停才可继续
-        client = docker.from_env()
         client.unpause(resource_id=id)
         message=id+"继续运行"
     else:

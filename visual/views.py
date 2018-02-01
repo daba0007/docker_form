@@ -84,7 +84,6 @@ def docker_pull_image(request):
     """
     ip=request.POST.get('ip', '')
     image = request.POST.get('image', '')
-    print(ip)
     if image:
         tag = request.POST.get('tag', '')
         reponame = request.POST.get('reponame', '')
@@ -226,16 +225,17 @@ def container_add(request):
     """
     增加容器页面
     """
-
-    containerlist=docker_ps()
-    return render(request, 'container_add.html',{'containerlist':containerlist})
+    containerip = "0.0.0.0"
+    hostList = Docker_host.objects.all()
+    containerlist=docker_ps(containerip)
+    return render(request, 'container_add.html',{'hostList':hostList,'containerlist':containerlist,'containerip':containerip})
 
 @csrf_exempt
 def docker_create_container(request):
     """
     通过镜像创建容器
     """
-
+    ip = request.POST.get('ip', '')
     image = request.POST.get('container', '')
     if image:                               # 如果镜像有填写，则运行，否则警告增加镜像
         tag = request.POST.get('tag', '')
@@ -263,7 +263,7 @@ def docker_create_container(request):
         check_volume_from = request.POST.get('check_volume_from', '')                             # 验证是否要建立数据卷容器
         volume_from_select = request.POST.get('volume_from_select', '')                           # 数据卷容器
 
-        message = docker_create(image=image, reponame=reponame, tag=tag, command=command, name=name, detach=check_d,
+        message = docker_create(ip=ip,image=image, reponame=reponame, tag=tag, command=command, name=name, detach=check_d,
                                 volume_container_list=volume_container_list, volume_local_list=volume_local_list,
                                 volume_permission=volume_permission, port_local_list=port_local_list,
                                 port_container_list=port_container_list, alias_name=alias_name, host_name=host_name,
@@ -279,17 +279,17 @@ def container_rm(request):
     """
     移除容器
     """
-
+    ip = request.POST.get('ip', '')
     idlist=request.POST.getlist('idlist', '')
     statuslist = request.POST.getlist('statuslist', '')
     flag = 1
     for status in statuslist:
-        if (docker_status(status) == 'exited' or docker_status(status) == 'created'):              # 若容器处于退出或刚创建，可以删除
+        if (docker_status(status=status) == 'exited' or docker_status(status=status) == 'created'):              # 若容器处于退出或刚创建，可以删除
             flag = 0
     if flag == 1:
         message = "存在正在使用的容器，请先删除该容器"
     else:
-        docker_rm(idlist)
+        docker_rm(ip=ip,idlist=idlist)
         message=idlist[0]+"等容器删除成功"
     rst = {
         "message": message
@@ -301,10 +301,10 @@ def container_start(request):
     """
     启动
     """
-
+    ip = request.POST.get('ip', '')
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
-    message=docker_start(id=id,status=status)
+    message=docker_start(ip=ip,id=id,status=status)
     rst = {
         'message': message
     }
@@ -315,10 +315,10 @@ def container_stop(request):
     """
     停止
     """
-
+    ip = request.POST.get('ip', '')
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
-    message=docker_stop(id=id,status=status)
+    message=docker_stop(ip=ip,id=id,status=status)
     rst = {'message': message}
     return HttpResponse(json.dumps(rst))
 
@@ -327,10 +327,10 @@ def container_pause(request):
     """
     暂停容器
     """
-
+    ip = request.POST.get('ip', '')
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
-    message=docker_pause(id=id,status=status)
+    message=docker_pause(ip=ip,id=id,status=status)
     rst = {
         'message': message
     }
@@ -341,10 +341,10 @@ def container_unpause(request):
     """
     继续容器
     """
-
+    ip = request.POST.get('ip', '')
     id = request.POST.get('id', '')
     status = request.POST.get('status', '')
-    message=docker_unpause(id=id,status=status)
+    message=docker_unpause(ip=ip,id=id,status=status)
     rst = {
         'message': message
     }

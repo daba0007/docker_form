@@ -3,9 +3,20 @@
 {% block content %}
 <div class="row" style="width: auto">
     <div class="col-lg-12" style="background-color: #ffffff">
+        <div class="panel-heading"><p id="container_add_head" style="font-size: 20px;font-weight: bold">{{containerip}}</p></div>
         <ul id="myTab" class="nav nav-tabs">
             <li class="active"><a href="#create" data-toggle="tab">创建一个容器</a></li>
             <li><a href="#command" data-toggle="tab">创建一个容器并进入终端</a></li>
+            <li class="dropdown pull-right">
+                 <a data-toggle="dropdown" class="dropdown-toggle">主机选择<strong class="caret"></strong></a>
+                <ul class="dropdown-menu" id="container_all_list">
+                    {% for host in hostList %}
+                    <li>
+                         <a>{{ host.ip }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
         </ul>
     <div id="myTabContent" class="tab-content" style="background-color: #ffffff ;margin-top: 50px;margin-bottom: 50px;">
         <div class="tab-pane fade in active" id="create">

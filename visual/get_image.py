@@ -51,11 +51,12 @@ def docker_search(repository,image,tag):
     搜索镜像
     """
     client = docker.from_env()
-    if "\." in repository:
-        search_image=re.split("\.",image)[0]+"-"+image
+    if "." in repository:
+        repo=re.split("\.",repository)[0]
     else:
-        search_image=image
-    if client.search(repository+":"+search_image+":"+tag):
+        repo=repository
+    print(repo+"/"+image+":"+tag)
+    if client.search(repo+"/"+image+":"+tag):
         return 1
     else:
         return ""

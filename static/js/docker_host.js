@@ -97,4 +97,9 @@ $("#container_hostlist li").click(function(){
   });
 })
 
+/////////////////////container_add页面获取主机镜像//////////////
+$("#container_all_list li").click(function(){
+    ip=$(this).text().replace(/\s+/g, "");
+    $("#container_add_head").text(ip);
+})
 
