@@ -8,6 +8,7 @@ from user.views import check_login
 from connect.ansible import ansible_playbook
 from connect.models import Docker_host,DateEncoder
 from connect.host import join_host
+
 import _thread
 import json
 import re
@@ -19,6 +20,7 @@ def host_in_docker(request):
     """
     进入连接页
     """
+
     return render(request, 'host_in_docker.html')
 
 @csrf_exempt

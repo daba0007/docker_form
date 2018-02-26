@@ -9,6 +9,7 @@ from visual.get_container import docker_ps,docker_create,docker_rm,docker_start,
 from django.views.decorators.csrf import csrf_exempt
 from user.views import check_login
 from connect.models import Docker_host
+from connect.ansible_interface import AnsiInterface
 import json
 import re
 import string

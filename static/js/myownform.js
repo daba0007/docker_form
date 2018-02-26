@@ -203,7 +203,6 @@ var docker_host_Table = function () {
             }, {
                 field: 'logindate',
                 title: '加入时间'
-
             },],
         });
     };
